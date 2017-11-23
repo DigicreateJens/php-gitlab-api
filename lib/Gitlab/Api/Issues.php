@@ -27,6 +27,7 @@ class Issues extends AbstractApi
             ->setAllowedValues('state', ['opened', 'closed'])
         ;
         $resolver->setDefined('labels');
+        $resolver->setDefined('assignee_id');
         $resolver->setDefined('milestone');
         $resolver->setDefined('iids')
             ->setAllowedTypes('iids', 'array')
