@@ -128,7 +128,7 @@ abstract class AbstractApi implements ApiInterface
 
         $body = null;
         if (!empty($parameters)) {
-            $body = $this->streamFactory->createStream(http_build_query($parameters));
+            $body = $this->streamFactory->createStream(QueryStringBuilder::build($parameters));
             $requestHeaders['Content-Type'] = 'application/x-www-form-urlencoded';
         }
 
