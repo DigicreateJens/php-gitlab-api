@@ -29,6 +29,7 @@ class Issues extends AbstractApi
         $resolver->setDefined('labels');
         $resolver->setDefined('assignee_id');
         $resolver->setDefined('milestone');
+        $resolver->setDefined('updated_before');
         $resolver->setDefined('iids')
             ->setAllowedTypes('iids', 'array')
             ->setAllowedValues('iids', function (array $value) {
