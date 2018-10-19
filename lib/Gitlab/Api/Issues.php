@@ -19,7 +19,7 @@ class Issues extends AbstractApi
      *
      * @return mixed
      */
-    public function all($project_id = null, array $parameters = [])
+    public function all($project_id = null, array $parameters = [], $group = false)
     {
         $resolver = $this->createOptionsResolver();
 
@@ -47,7 +47,15 @@ class Issues extends AbstractApi
         ;
         $resolver->setDefined('search');
 
-        $path = $project_id === null ? 'issues' : $this->getProjectPath($project_id, 'issues');
+        if($project_id === null) {
+            $path = 'issues';
+        } else {
+            if(!$group) {
+                $path = $this->getProjectPath($project_id, 'issues');
+            } else {
+                $path = $this->getGroupPath($project_id, 'issues');
+            }
+        }
 
         return $this->get($path, $resolver->resolve($parameters));
     }
