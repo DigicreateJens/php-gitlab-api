@@ -241,6 +241,16 @@ class Projects extends AbstractApi
 
     /**
      * @param int $project_id
+     * @param int $pipeline_id
+     * @return mixed
+     */
+    public function removePipeline($project_id, $pipeline_id)
+    {
+        return $this->delete($this->getProjectPath($project_id, 'pipelines/'.$this->encodePath($pipeline_id)));
+    }
+
+    /**
+     * @param int $project_id
      * @param string $username_query
      * @return mixed
      */
