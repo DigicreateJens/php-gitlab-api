@@ -19,7 +19,7 @@ class Issues extends AbstractApi
      *
      * @return mixed
      */
-    public function all($project_id = null, array $parameters = [], $group = false)
+    public function all($project_id = null, array $parameters = [])
     {
         $resolver = $this->createOptionsResolver();
 
@@ -29,7 +29,6 @@ class Issues extends AbstractApi
         $resolver->setDefined('labels');
         $resolver->setDefined('assignee_id');
         $resolver->setDefined('milestone');
-        $resolver->setDefined('updated_before');
         $resolver->setDefined('iids')
             ->setAllowedTypes('iids', 'array')
             ->setAllowedValues('iids', function (array $value) {
@@ -47,15 +46,7 @@ class Issues extends AbstractApi
         ;
         $resolver->setDefined('search');
 
-        if($project_id === null) {
-            $path = 'issues';
-        } else {
-            if(!$group) {
-                $path = $this->getProjectPath($project_id, 'issues');
-            } else {
-                $path = $this->getGroupPath($project_id, 'issues');
-            }
-        }
+        $path = $project_id === null ? 'issues' : $this->getProjectPath($project_id, 'issues');
 
         return $this->get($path, $resolver->resolve($parameters));
     }
@@ -89,6 +80,19 @@ class Issues extends AbstractApi
     public function update($project_id, $issue_iid, array $params)
     {
         return $this->put($this->getProjectPath($project_id, 'issues/'.$this->encodePath($issue_iid)), $params);
+    }
+
+    /**
+     * @param int $project_id
+     * @param int $issue_iid
+     * @param int $to_project_id
+     * @return mixed
+     */
+    public function move($project_id, $issue_iid, $to_project_id)
+    {
+        return $this->post($this->getProjectPath($project_id, 'issues/'.$this->encodePath($issue_iid)).'/move', array(
+            'to_project_id' => $to_project_id
+        ));
     }
 
     /**
@@ -163,6 +167,91 @@ class Issues extends AbstractApi
     public function removeComment($project_id, $issue_iid, $note_id)
     {
         return $this->delete($this->getProjectPath($project_id, 'issues/'.$this->encodePath($issue_iid).'/notes/'.$this->encodePath($note_id)));
+    }
+
+    /**
+     * @param int $project_id
+     * @param int $issue_iid
+     * @return mixed
+     */
+    public function showDiscussions($project_id, $issue_iid)
+    {
+        return $this->get($this->getProjectPath($project_id, 'issues/'.$this->encodePath($issue_iid)).'/discussions');
+    }
+
+    /**
+     * @param int $project_id
+     * @param int $issue_iid
+     * @param string $discussion_id
+     * @return mixed
+     */
+    public function showDiscussion($project_id, $issue_iid, $discussion_id)
+    {
+        return $this->get($this->getProjectPath($project_id, 'issues/'.$this->encodePath($issue_iid)).'/discussions/'.$this->encodePath($discussion_id));
+    }
+
+    /**
+     * @param int $project_id
+     * @param int $issue_iid
+     * @param string|array $body
+     * @return mixed
+     */
+    public function addDiscussion($project_id, $issue_iid, $body)
+    {
+        // backwards compatibility
+        if (is_array($body)) {
+            $params = $body;
+        } else {
+            $params = array('body' => $body);
+        }
+
+        return $this->post($this->getProjectPath($project_id, 'issues/'.$this->encodePath($issue_iid).'/discussions'), $params);
+    }
+
+    /**
+     * @param int $project_id
+     * @param int $issue_iid
+     * @param string $discussion_id
+     * @param string|array $body
+     * @return mixed
+     */
+    public function addDiscussionNote($project_id, $issue_iid, $discussion_id, $body)
+    {
+        // backwards compatibility
+        if (is_array($body)) {
+            $params = $body;
+        } else {
+            $params = array('body' => $body);
+        }
+
+        return $this->post($this->getProjectPath($project_id, 'issues/'.$this->encodePath($issue_iid).'/discussions/'.$this->encodePath($discussion_id).'/notes'), $params);
+    }
+
+    /**
+     * @param int $project_id
+     * @param int $issue_iid
+     * @param string $discussion_id
+     * @param int $note_id
+     * @param string $body
+     * @return mixed
+     */
+    public function updateDiscussionNote($project_id, $issue_iid, $discussion_id, $note_id, $body)
+    {
+        return $this->put($this->getProjectPath($project_id, 'issues/'.$this->encodePath($issue_iid).'/discussions/'.$this->encodePath($discussion_id).'/notes/'.$this->encodePath($note_id)), array(
+            'body' => $body
+        ));
+    }
+
+    /**
+     * @param int $project_id
+     * @param int $issue_iid
+     * @param string $discussion_id
+     * @param int $note_id
+     * @return mixed
+     */
+    public function removeDiscussionNote($project_id, $issue_iid, $discussion_id, $note_id)
+    {
+        return $this->delete($this->getProjectPath($project_id, 'issues/'.$this->encodePath($issue_iid).'/discussions/'.$this->encodePath($discussion_id).'/notes/'.$this->encodePath($note_id)));
     }
 
     /**
