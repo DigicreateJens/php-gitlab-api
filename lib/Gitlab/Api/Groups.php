@@ -122,6 +122,7 @@ class Groups extends AbstractApi
         $resolver->setDefined('scope');
         $resolver->setDefined('labels');
         $resolver->setDefined('order_by');
+        $resolver->setDefined('page');
 
         return $this->get('groups/'.$this->encodePath($id).'/issues', $resolver->resolve($parameters));
     }
