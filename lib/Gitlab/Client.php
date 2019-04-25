@@ -263,6 +263,10 @@ class Client
         return new Api\Keys($this);
     }
 
+    public function events() {
+        return new Api\Events($this);
+    }
+
     /**
      * @return Api\Tags
      */
@@ -316,6 +320,9 @@ class Client
 
             case 'issues':
                 return $this->issues();
+
+            case 'events':
+                return $this->events();
 
             case 'board':
             case 'issue_boards':
